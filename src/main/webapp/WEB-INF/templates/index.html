@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript"
+            th:src="@{static/js/jquery-1.12.4.min.js}"></script>
+    <link
+            th:href="@{static/bootstrap-3.3.7-dist/css/bootstrap.min.css}"
+            rel="stylesheet">
+    <script
+            th:src="@{static/bootstrap-3.3.7-dist/js/bootstrap.min.js}"></script>
+    <!--vue-->
+    <link rel="shortcut icon" href="#"/>
+    <script type="text/javascript" th:src="@{static/js/vue.js}"></script>
+<!--    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
+    <script type="text/javascript" th:src="@{static/js/axios.min.js}"></script>
+
+
+</head>
+<body>
+
+<!--bookstarp网格系统-->
+<!-- 搭建显示页面 -->
+<div class="container" id="div_container">
+    <!-- 标题 -->
+    <div class="row">
+        <div class="col-md-12">
+            <h1>SSM-CRUD BY XuY</h1>
+        </div>
+    </div>
+    <!-- 按钮 -->
+    <div class="row">
+        <div class="col-md-4 col-md-offset-9">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#add_emp_modal" id="add_emp_btn" onclick="getDepts()">新增</button>
+<!--            <button class="btn btn-primary" id="add_btn" @click="getDepts">新增</button>-->
+            <button class="btn btn-danger">删除</button>
+        </div>
+    </div>
+    <!-- 显示表格数据 -->
+    <div class="row" id="listTable">
+        <div class="col-md-12">
+            <table class="table table-hover" id="emp_table">
+                <tr>
+                    <th>#</th>
+                    <th>empName</th>
+                    <th>gender</th>
+                    <th>email</th>
+                    <th>deptName</th>
+                    <th>操作</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6" id="info_div">
+        </div>
+        <div class="col-md-6" id="navigate_div">
+        </div>
+    </div>
+
+<!--    &lt;!&ndash; 用于员工新增的模态框 &ndash;&gt;-->
+<!--    <div class="modal fade" id="add_emp_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+<!--        <div class="modal-dialog">-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
+<!--                    <h4 class="modal-title" id="myModalLabel">添加员工</h4>-->
+<!--                </div>-->
+<!--                <div class="modal-body">在这里添加一些文本</div>-->
+<!--                <div class="modal-footer">-->
+<!--                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>-->
+<!--                    <button type="button" class="btn btn-primary">提交更改</button>-->
+<!--                </div>-->
+<!--            </div>&lt;!&ndash; /.modal-content &ndash;&gt;-->
+<!--        </div>&lt;!&ndash; /.modal &ndash;&gt;-->
+<!--    </div>-->
+
+    <div class="modal fade" id="add_emp_modal" tabindex="-1" role="dialog" aria-labelledby="addEmpModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">新增员工</h4>
+                </div>
+<!--                <%&#45;&#45; 表单部分 &#45;&#45;%>-->
+                <div class="modal-body">
+                    <form id="add_emp_form" th:action="@{/emp}" method="post" class="form-horizontal">
+                        <div class="form-group">
+                            <label for="emp_name_input" class="col-sm-2 control-label">姓名</label>
+                            <div class="col-sm-10 has-feedback">
+                                <input type="text" class="form-control" id="emp_name_input" placeholder="OneIce"
+                                       name="empName">
+                                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+<!--                                <%&#45;&#45; 显示错误信息 &#45;&#45;%>-->
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="emp_email_input" class="col-sm-2 control-label">邮箱</label>
+                            <div class="col-sm-10 has-feedback">
+                                <input type="email" class="form-control has-feedback" id="emp_email_input"
+                                       placeholder="oneice@foxmail.com"
+                                       name="email">
+                                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+<!--                                <%&#45;&#45; 显示错误消息 &#45;&#45;%>-->
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="emp_gender_input1" class="col-sm-2 control-label">性别</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline">
+                                    <input checked type="radio" name="gender" id="emp_gender_input1" value="1"> 男
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="gender" id="emp_gender_input2" value="2"> 女
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="emp_dept_select" class="col-sm-2 control-label">部门</label>
+                            <div class="col-sm-4">
+                                <select id="emp_dept_select" name="dId" class="form-control">
+<!--                                    <%&#45;&#45; 从数据库中查询部门信息 &#45;&#45;%>-->
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+<!--                <%&#45;&#45; 保存和关闭按钮 &#45;&#45;%>-->
+                <div class="modal-footer">
+                    <button id="emp_close_btn" type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+<!--                    <button id="emp_save_btn" type="button" class="btn btn-primary" disabled onclick="saveEmp">保存</button>-->
+                    <button id="emp_save_btn" type="button" class="btn btn-primary" onclick="saveEmp()">保存</button>
+
+                    <!--                    <%&#45;&#45; 默认禁用 &#45;&#45;%>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div><script>
+    $(function () {
+        var app=new Vue({
+            el:"#div_container",
+            data:{},
+            methods:{
+                firstPage:function (page, rows) {
+                    axios({
+                        method:"get",
+                        url:"http://localhost:8080/ssm/emp",
+                        params:{
+                            page:page,
+                            rows:rows
+                        }
+                    }).then(function (response) {
+                        console.log("first start");
+                        buildEmpsTable(response.data.extend.pageInfo.list);
+                        buildPageInfo(response.data.extend.pageInfo);
+                        buildPageNavigate(response.data.extend.pageInfo)
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                },
+            }
+        });
+        app.firstPage(1,5);
+    })
+
+    // 员工信息
+    function buildEmpsTable(list) {
+        $.each(list, function () {
+            var empTr = $("<tr></tr>")
+            // var empCbTd = $('<td><input class="check_item" type="checkbox"></td>')
+            var empIdTd = $("<td></td>").append(this.empId)
+            var empNameTd = $("<td></td>").append(this.empName)
+            var genderTd = $("<td></td>").append(this.gender == "M" ? "男" : "女")
+            var emailTd = $("<td></td>").append(this.email)
+            //避免部门为null
+            var deptNameTd = $("<td></td>").append(this.department ? this.department.deptName : "")
+            var editBtn = $("<button></button>").addClass("btn btn-info btn-sm edit_btn").append($("<span></span>")
+                .addClass("glyphicon glyphicon-edit")).append(" 编辑").attr("emp_id", this.empId)
+            var delBtn = $("<button></button>").addClass("btn btn-danger btn-sm delete_btn").append($("<span></span>")
+                .addClass("glyphicon glyphicon-trash")).append(" 删除").attr("emp_id", this.empId)
+            var operatorTd = $("<td></td>").append(editBtn).append(" ").append(delBtn)
+            // empTr.append(empCbTd).append(empIdTd).append(empNameTd).append(genderTd).append(emailTd).append(deptNameTd).append(operatorTd)
+                empTr.append(empIdTd).append(empNameTd).append(genderTd).append(emailTd).append(deptNameTd).append(operatorTd)
+                .appendTo("#emp_table")
+        })
+    }
+
+    function buildPageInfo(pageInfo) {
+        $("#info_div").empty() //清空原信息
+        pageNum = pageInfo.pageNum
+        pages = pageInfo.pages
+        total = pageInfo.total
+        $("#info_div").append('当前第'+pageNum+'页, 共'+pages+'页, 共'+total+'条记录')
+    }
+
+    //构建导航条
+    function buildPageNavigate(pageInfo) {
+        $("#navigate_div").empty() //清空原导航条
+        var ul = $("<ul></ul>").addClass("pagination")
+        //首页和上一页
+        var firstPageLi = $("<li></li>").append($("<a></a>").attr("href", "#").append("首页"))
+        var prePageLi = $("<li></li>").append($("<a></a>").attr("href", "#").append("&laquo;"))
+        //没有上一页时禁用掉按钮
+        if (!pageInfo.hasPreviousPage) {
+            firstPageLi.addClass("disabled")
+            prePageLi.addClass("disabled")
+        }
+        //绑定单击事件
+        clickToPage(firstPageLi, 1, pageInfo.pageSize)
+        clickToPage(prePageLi, pageInfo.prePage, pageInfo.pageSize)
+        ul.append(firstPageLi).append(prePageLi)
+
+        //遍历中间页码
+        $.each(pageInfo.navigatepageNums, function () {
+            var pageNumLi = $("<li></li>").append($("<a></a>").attr("href", "#").append(this))
+            //高亮当前页的页码
+            if (pageInfo.pageNum == this) {
+                pageNumLi.addClass("active")
+            }
+            //绑定单击事件
+            clickToPage(pageNumLi, this, pageInfow.pageSize)
+            ul.append(pageNumLi)
+        })
+        //下一页和末页
+        var nextPageLi = $("<li></li>").append($("<a></a>").attr("href", "#").append("&raquo;"))
+        var lastPageLi = $("<li></li>").append($("<a></a>").attr("href", "#").append("末页"))
+        //绑定单击事件
+        clickToPage(nextPageLi, pageInfo.nextPage, pageInfo.pageSize)
+        clickToPage(lastPageLi, pageInfo.pages, pageInfo.pageSize)
+        //没有下一页时禁用掉按钮
+        if (!pageInfo.hasNextPage) {
+            nextPageLi.addClass("disabled")
+            lastPageLi.addClass("disabled")
+        }
+        ul.append(nextPageLi).append(lastPageLi)
+        //创建导航条, 显示到页面上
+        var nav = $("<nav></nav>").append(ul)
+        $("#navigate_div").append(nav)
+    }
+
+
+    //为导航条页码绑定单击事件
+    function clickToPage(obj, page, rows) { //按钮对象, 页码, 记录数
+        $(obj).click(function () {
+            if (!$(this).hasClass("disabled") && !$(this).hasClass("active")) {
+                toPage(page, rows)
+            }
+            return false
+        })
+    }
+
+    // 页面跳转函数
+    function toPage(page, rows) {
+        axios({
+            method:"get",
+            url:"http://localhost:8080/ssm/emp",
+            params:{
+                page:page,
+                rows:rows
+            }
+        }).then(function (response) {
+            $("#emp_table").empty();
+            buildEmpsTable(response.data.extend.pageInfo.list);
+            buildPageInfo(response.data.extend.pageInfo);
+            buildPageNavigate(response.data.extend.pageInfo)
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+
+    // var add=new Vue({
+    //     el:"#add_btn",
+    //     data:{},
+    //     methods:{
+    //         getDepts:function () {
+    //             axios({
+    //                 type: "GET",
+    //                 url: "http://localhost:8080/ssm/dept",
+    //                 dataType: "json",
+    //                 params:{
+    //                 }
+    //             }).then(function (result) {
+    //                 $.each(result.extend.dataList, function () {
+    //                     var option = $("<option></option>").attr("value", this.deptId).append(this.deptName)
+    //                     $("#emp_dept_select").append(option)
+    //                 })
+    //             }).catch(function (error) {
+    //                 console.log(error);
+    //             });
+    //         },
+    //     }
+    // });
+    // 给新增框发送ajks请求
+    function getDepts() {
+        $("#emp_dept_select").empty()
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/ssm/dept",
+            dataType: "json",
+            success: function (result) {
+                $.each(result.extend.deptList, function () {
+                    var option = $("<option></option>").attr("value", this.deptId).append(this.deptName)
+                    $("#emp_dept_select").append(option)
+                })
+            }
+        })
+    }
+
+    //    疑问一：为什么该ajks发送请求后需要无参构造器
+    function saveEmp() {
+        alert("save")
+        $.ajax({
+            type: "POST",
+            url: "http://localhost:8080/ssm/emp",
+            dataType: "json",
+            data: $("#add_emp_form").serialize(),
+            success: function (result) {
+                alert("save调用成功")
+            }
+        })
+    }
+</script>
+</body>
+</html>
