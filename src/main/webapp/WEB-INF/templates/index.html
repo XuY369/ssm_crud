@@ -91,7 +91,7 @@
                             <label for="emp_name_input" class="col-sm-2 control-label">姓名</label>
                             <div class="col-sm-10 has-feedback">
                                 <input type="text" class="form-control" id="emp_name_input" placeholder="OneIce"
-                                       name="empName">
+                                       name="empName" onchange="change()">
                                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 <!--                                <%&#45;&#45; 显示错误信息 &#45;&#45;%>-->
                                 <span class="help-block"></span>
@@ -101,8 +101,8 @@
                             <label for="emp_email_input" class="col-sm-2 control-label">邮箱</label>
                             <div class="col-sm-10 has-feedback">
                                 <input type="email" class="form-control has-feedback" id="emp_email_input"
-                                       placeholder="oneice@foxmail.com"
-                                       name="email">
+                                       placeholder="oneice@foxmail.com" value="481501401@qq.com"
+                                       name="email" onchange="change()">
                                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 <!--                                <%&#45;&#45; 显示错误消息 &#45;&#45;%>-->
                                 <span class="help-block"></span>
@@ -112,10 +112,10 @@
                             <label for="emp_gender_input1" class="col-sm-2 control-label">性别</label>
                             <div class="col-sm-10">
                                 <label class="radio-inline">
-                                    <input checked type="radio" name="gender" id="emp_gender_input1" value="1"> 男
+                                    <input checked type="radio" name="gender" id="emp_gender_input1" value="男"> 男
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="gender" id="emp_gender_input2" value="2"> 女
+                                    <input type="radio" name="gender" id="emp_gender_input2" value="女"> 女
                                 </label>
                             </div>
                         </div>
@@ -133,7 +133,7 @@
                 <div class="modal-footer">
                     <button id="emp_close_btn" type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
 <!--                    <button id="emp_save_btn" type="button" class="btn btn-primary" disabled onclick="saveEmp">保存</button>-->
-                    <button id="emp_save_btn" type="button" class="btn btn-primary" onclick="saveEmp()">保存</button>
+                    <button id="emp_save_btn" type="button" class="btn btn-primary" onclick="saveEmp()" disabled="true">保存</button>
 
                     <!--                    <%&#45;&#45; 默认禁用 &#45;&#45;%>-->
                 </div>
@@ -297,7 +297,7 @@
     //         },
     //     }
     // });
-    // 给新增框发送ajks请求
+    // 增加框添加部门信息
     function getDepts() {
         $("#emp_dept_select").empty()
         $.ajax({
@@ -325,6 +325,82 @@
                 alert("save调用成功")
             }
         })
+    }
+
+    // 校验
+    //校验新增表单的姓名和邮箱
+    function validateAddForm() {
+        //校验姓名
+        var empName = $("#emp_name_input").val()
+        var regName = /(^[a-zA-Z0-9_-]{3,16}$)|(^[\u2E80-\u9FFF]{2,8}$)/ //匹配2-8位中文, 或3-16字母下划线数字
+        if (regName.test(empName)) { //姓名格式正确
+            //Ajax再校验姓名是否存在
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/ssm/checkEmpName",
+                data: $("#emp_name_input").serialize(),
+                dateType: "json",
+                success: function (result) {
+                    if (result.errorCode == "00000") {
+                        showValidateMsg("#emp_name_input", "success", "")
+                    } else if (result.errorCode == "A0111") { //姓名已存在
+                        showValidateMsg("#emp_name_input", "error", "该员工姓名已存在, 请重新输入")
+                    } else {
+                        showValidateMsg("#emp_name_input", "error", "姓名错误, 请重新输入")
+                    }
+                }
+            })
+        } else { //姓名格式错误
+            showValidateMsg("#emp_name_input", "error", "姓名格式错误, 必须是2-8位中文, 或3-16字母下划线数字")
+            return false
+        }
+        //校验邮箱
+        var empEmail = $("#emp_email_input").val()
+        var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/ //匹配电子邮箱
+        if (regEmail.test(empEmail)) { //邮箱格式正确
+            showValidateMsg("#emp_email_input", "success", "")
+            return true
+        } else { //邮箱格式错误
+            showValidateMsg("#emp_email_input", "error", "邮箱格式错误")
+            return false
+        }
+        //完全正确
+        return true
+    }
+
+    //内容一改变就进行校验
+    function change() {
+                alert("一改变就修改内容");
+                if (validateAddForm()) {
+                    $("#emp_save_btn").prop("disabled", false)
+                } else { //无效时禁用按钮
+                    $("#emp_save_btn").prop("disabled", true)
+                }
+    }
+    // $("#emp_name_input,#emp_email_input").change(function () {
+    //     alert("一改变就修改内容");
+    //     if (validateAddForm()) {
+    //         $("#emp_save_btn").prop("disabled", false)
+    //     } else { //无效时禁用按钮
+    //         $("#emp_save_btn").prop("disabled", true)
+    //     }
+    // })
+
+    //显示校验结果信息
+    function showValidateMsg(selector, status, msg) { //选择器, 结果状态, 结果信息
+        //初始化状态
+        $(selector).parent().removeClass("has-error has-success")
+        $(selector).nextAll(".glyphicon").removeClass("glyphicon-remove glyphicon-ok")
+        $(selector).nextAll(".help-block").text("")
+        if (status == "success") {
+            $(selector).parent().addClass("has-success") //颜色
+            $(selector).nextAll(".glyphicon").addClass("glyphicon-ok") //图标
+            $(selector).nextAll(".help-block").text(msg) //提示信息
+        } else if (status == "error") {
+            $(selector).parent().addClass("has-error")
+            $(selector).nextAll(".glyphicon").addClass("glyphicon-remove")
+            $(selector).nextAll(".help-block").text(msg)
+        }
     }
 </script>
 </body>

@@ -44,4 +44,22 @@ public class EmployeeController {
         System.out.println(username+password);
         return "test";
     }
+
+    @RequestMapping("/checkEmpName")
+    @ResponseBody
+    public Msg checkEmpName(String empName){
+        System.out.println("checkout");
+        boolean empName1 = employeeService.getEmpName(empName);
+        if (empName1){
+            Msg msg = new Msg();
+            msg.setErrorCode("00000");
+            msg.setMsg("名字不存在，可输入");
+            return msg;
+        }else {
+            Msg msg = new Msg();
+            msg.setErrorCode("A0111");
+            msg.setMsg("名字存在");
+            return msg;
+        }
+    }
 }

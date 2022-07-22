@@ -8,6 +8,25 @@ public class Msg {
     private int code;
     //提示信息
     private String msg;
+    private String errorCode;
+
+    @Override
+    public String toString() {
+        return "Msg{" +
+                "code=" + code +
+                ", msg='" + msg + '\'' +
+                ", errorCode='" + errorCode + '\'' +
+                ", extend=" + extend +
+                '}';
+    }
+
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
 
     //用户要返回给浏览器的数据
     private Map<String, Object> extend = new HashMap<String, Object>();
