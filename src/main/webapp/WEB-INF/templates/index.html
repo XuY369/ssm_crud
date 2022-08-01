@@ -59,6 +59,7 @@
         </div>
     </div>
 </div>
+
 <!--    bootStrap模态框：增加框-->
 <div class="modal fade" id="add_emp_modal" tabindex="-1" role="dialog" aria-labelledby="addEmpModal">
     <div class="modal-dialog" role="document">
@@ -151,7 +152,9 @@
         app.firstPage(1,5);
     })
 
-    // 员工信息
+    /**
+     * 构建员工信息列表函数
+     * */
     function buildEmpsTable(list) {
         $.each(list, function () {
             var empTr = $("<tr></tr>")
@@ -173,6 +176,9 @@
         })
     }
 
+    /**
+     * 尾行信息和分页条
+     * */
     //尾行信息条
     function buildPageInfo(pageInfo) {
         $("#info_div").empty() //清空原信息
@@ -205,8 +211,9 @@
                 pageNumLi.addClass("active")
             }
             //绑定单击事件
-            clickToPage(pageNumLi, this, pageInfow.pageSize)
+            clickToPage(pageNumLi, this, pageInfo.pageSize)
             ul.append(pageNumLi)
+
         })
         //下一页和末页
         var nextPageLi = $("<li></li>").append($("<a></a>").attr("href", "#").append("&raquo;"))
@@ -224,50 +231,9 @@
         var nav = $("<nav></nav>").append(ul)
         $("#navigate_div").append(nav)
     }
-    //构建导航条
-    // function buildPageNavigate(pageInfo) {
-    //     $("#navigate_div").empty() //清空原导航条
-    //     var ul = $("<ul></ul>").addClass("pagination")
-    //     //首页和上一页
-    //     var firstPageLi = $("<li></li>").append($("<a></a>").attr("href", "#").append("首页"))
-    //     var prePageLi = $("<li></li>").append($("<a></a>").attr("href", "#").append("&laquo;"))
-    //     //没有上一页时禁用掉按钮
-    //     if (!pageInfo.hasPreviousPage) {
-    //         firstPageLi.addClass("disabled")
-    //         prePageLi.addClass("disabled")
-    //     }
-    //     //绑定单击事件
-    //     clickToPage(firstPageLi, 1, pageInfo.pageSize)
-    //     clickToPage(prePageLi, pageInfo.prePage, pageInfo.pageSize)
-    //     ul.append(firstPageLi).append(prePageLi)
-    //     //遍历中间页码
-    //     $.each(pageInfo.navigatepageNums, function () {
-    //         var pageNumLi = $("<li></li>").append($("<a></a>").attr("href", "#").append(this))
-    //         //高亮当前页的页码
-    //         if (pageInfo.pageNum == this) {
-    //             pageNumLi.addClass("active")
-    //         }
-    //         //绑定单击事件
-    //         clickToPage(pageNumLi, this, pageInfow.pageSize)
-    //         ul.append(pageNumLi)
-    //     })
-    //     //下一页和末页
-    //     var nextPageLi = $("<li></li>").append($("<a></a>").attr("href", "#").append("&raquo;"))
-    //     var lastPageLi = $("<li></li>").append($("<a></a>").attr("href", "#").append("末页"))
-    //     //绑定单击事件
-    //     clickToPage(nextPageLi, pageInfo.nextPage, pageInfo.pageSize)
-    //     clickToPage(lastPageLi, pageInfo.pages, pageInfo.pageSize)
-    //     //没有下一页时禁用掉按钮
-    //     if (!pageInfo.hasNextPage) {
-    //         nextPageLi.addClass("disabled")
-    //         lastPageLi.addClass("disabled")
-    //     }
-    //     ul.append(nextPageLi).append(lastPageLi)
-    //     //创建导航条, 显示到页面上
-    //     var nav = $("<nav></nav>").append(ul)
-    //     $("#navigate_div").append(nav)
-    // }
-    //为导航条页码绑定单击事件
+    /**
+     * 页面跳转函数和绑定页面跳转函数
+     * */
     function clickToPage(obj, page, rows) {
         //按钮对象, 页码, 记录数
         $(obj).click(function () {
