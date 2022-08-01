@@ -48,7 +48,6 @@ public class EmployeeController {
     @RequestMapping("/checkEmpName")
     @ResponseBody
     public Msg checkEmpName(String empName){
-        System.out.println("checkout");
         boolean empName1 = employeeService.getEmpName(empName);
         if (empName1){
             Msg msg = new Msg();
